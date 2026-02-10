@@ -1,0 +1,124 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Agendamento | FisioCare</title>
+  <meta name="description" content="Agende sua consulta de fisioterapia">
+  <link rel="stylesheet" href="/css/styles.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: "Inter", Arial, sans-serif;
+      background: #f5f7fa;
+      color: #264653;
+    }
+    .booking-page {
+      max-width: 720px;
+      margin: 48px auto;
+      padding: 24px;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    }
+    .booking-page h1 {
+      margin-top: 0;
+    }
+    .booking-grid {
+      display: grid;
+      gap: 14px;
+    }
+    .booking-grid label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .booking-grid input,
+    .booking-grid select,
+    .booking-grid textarea,
+    .booking-grid button {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid #cfd8e3;
+      font: inherit;
+    }
+    .booking-grid button {
+      background: #2a9d8f;
+      color: #fff;
+      border: none;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .booking-grid button:disabled {
+      opacity: 0.7;
+      cursor: wait;
+    }
+    .booking-status {
+      margin-top: 12px;
+      min-height: 24px;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <main class="booking-page">
+    <h1>Agende sua consulta</h1>
+    <p>Preencha os dados abaixo e nossa equipe entrara em contato para confirmar.</p>
+
+    <form id="bookingForm" class="booking-grid">
+      <div>
+        <label for="name">Nome</label>
+        <input id="name" name="name" type="text" required minlength="2" maxlength="100">
+      </div>
+
+      <div>
+        <label for="email">E-mail</label>
+        <input id="email" name="email" type="email" required maxlength="100">
+      </div>
+
+      <div>
+        <label for="phone">Telefone</label>
+        <input id="phone" name="phone" type="tel" required minlength="10" maxlength="20">
+      </div>
+
+      <div>
+        <label for="preferredDate">Data preferida</label>
+        <input id="preferredDate" name="preferredDate" type="date">
+      </div>
+
+      <div>
+        <label for="preferredTime">Horário preferido</label>
+        <input id="preferredTime" name="preferredTime" type="time">
+      </div>
+
+      <div>
+        <label for="serviceType">Serviço</label>
+        <select id="serviceType" name="serviceType">
+          <option value="">Selecione</option>
+          <option>Fisioterapia Ortopédica</option>
+          <option>Fisioterapia Esportiva</option>
+          <option>Pilates Clínico</option>
+          <option>Liberação Miofascial</option>
+          <option>Reeducação Postural</option>
+          <option>Fisioterapia Geriátrica</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="notes">Observações</label>
+        <textarea id="notes" name="notes" rows="4" maxlength="1000"></textarea>
+      </div>
+
+      <button id="submitBtn" type="submit">Enviar agendamento</button>
+    </form>
+
+    <div id="bookingStatus" class="booking-status" role="status" aria-live="polite"></div>
+  </main>
+
+  <script src="/js/agendamento.js" defer></script>
+</body>
+</html>
+

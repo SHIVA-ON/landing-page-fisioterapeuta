@@ -1,0 +1,698 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <!-- ============================================================
+       DASHBOARD ADMINISTRATIVO
+       ============================================================
+       Painel de controle para gerenciamento do site.
+       Funcionalidades: mensagens, agendamentos, conteúdo, depoimentos.
+       
+       @author Desenvolvedor Full Stack
+       @version 1.0.0
+  -->
+  
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  
+  <title>Dashboard | Painel Administrativo</title>
+  <meta name="description" content="Painel de controle administrativo">
+  <meta name="robots" content="noindex, nofollow">
+  
+  <!-- Preconnect -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  
+  <!-- Fontes -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Estilos -->
+  <link rel="stylesheet" href="/admin/css/admin.css">
+  
+  <style>
+    /* Estilos criticos inline */
+    body {
+      margin: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: #f5f7fa;
+      color: #264653;
+    }
+  </style>
+</head>
+<body class="dashboard-page">
+  <!-- ============================================================
+       SIDEBAR
+       ============================================================ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <a href="/" class="sidebar-brand" target="_blank">
+        <span class="sidebar-logo-icon" aria-hidden="true">+</span>
+        <span class="sidebar-logo-text">Fisio<span class="sidebar-logo-accent">Care</span></span>
+      </a>
+      <button 
+        class="sidebar-close" 
+        id="sidebarClose"
+        aria-label="Fechar menu"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+    
+    <nav class="sidebar-nav" aria-label="Navegação do painel">
+      <ul class="sidebar-menu">
+        <li>
+          <a href="#dashboard" class="sidebar-link active" data-section="dashboard">
+            <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <rect x="3" y="3" width="7" height="7"/>
+              <rect x="14" y="3" width="7" height="7"/>
+              <rect x="14" y="14" width="7" height="7"/>
+              <rect x="3" y="14" width="7" height="7"/>
+            </svg>
+            Dashboard
+          </a>
+        </li>
+        <li>
+          <a href="#mensagens" class="sidebar-link" data-section="messages">
+            <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+              <polyline points="22,6 12,13 2,6"/>
+            </svg>
+            Mensagens
+            <span class="sidebar-badge" id="messagesBadge">0</span>
+          </a>
+        </li>
+        <li>
+          <a href="#agendamentos" class="sidebar-link" data-section="bookings">
+            <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+            Agendamentos
+            <span class="sidebar-badge" id="bookingsBadge">0</span>
+          </a>
+        </li>
+        <li>
+          <a href="#depoimentos" class="sidebar-link" data-section="testimonials">
+            <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+            </svg>
+            Depoimentos
+          </a>
+        </li>
+        <li>
+          <a href="#servicos" class="sidebar-link" data-section="services">
+            <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+              <polyline points="2 17 12 22 22 17"/>
+              <polyline points="2 12 12 17 22 12"/>
+            </svg>
+            Serviços
+          </a>
+        </li>
+        <li>
+          <a href="#conteudo" class="sidebar-link" data-section="content">
+            <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="16" y1="13" x2="8" y2="13"/>
+              <line x1="16" y1="17" x2="8" y2="17"/>
+              <polyline points="10 9 9 9 8 9"/>
+            </svg>
+            Conteúdo
+          </a>
+        </li>
+      </ul>
+    </nav>
+    
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="sidebar-user-avatar" aria-hidden="true">A</div>
+        <div class="sidebar-user-info">
+          <span class="sidebar-user-name" id="userName">Admin</span>
+          <span class="sidebar-user-role">Administrador</span>
+        </div>
+      </div>
+      <button class="sidebar-logout" id="logoutBtn">
+        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+          <polyline points="16 17 21 12 16 7"/>
+          <line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+        Sair
+      </button>
+    </div>
+  </aside>
+
+  <!-- ============================================================
+       MAIN CONTENT
+       ============================================================ -->
+  <main class="main-content">
+    <!-- Header mobile -->
+    <header class="content-header">
+      <button 
+        class="menu-toggle" 
+        id="menuToggle"
+        aria-label="Abrir menu"
+        aria-expanded="false"
+      >
+        <span class="menu-bar"></span>
+        <span class="menu-bar"></span>
+        <span class="menu-bar"></span>
+      </button>
+      <h1 class="page-title" id="pageTitle">Dashboard</h1>
+    </header>
+
+    <!-- Overlay para mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- ============================================================
+         DASHBOARD SECTION
+         ============================================================ -->
+    <section class="content-section active" id="dashboardSection">
+      <div class="section-header">
+        <h2 class="section-title">Visao Geral</h2>
+        <p class="section-subtitle">Acompanhe às metricas do seu site</p>
+      </div>
+      
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon stat-icon-primary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+              <polyline points="22,6 12,13 2,6"/>
+            </svg>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value" id="statMessages">0</span>
+            <span class="stat-label">Mensagens não lidas</span>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon stat-icon-secondary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value" id="statBookings">0</span>
+            <span class="stat-label">Agendamentos recebidos</span>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon stat-icon-accent">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+            </svg>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value" id="statTestimonials">0</span>
+            <span class="stat-label">Depoimentos ativos</span>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon stat-icon-success">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+              <polyline points="2 17 12 22 22 17"/>
+              <polyline points="2 12 12 17 22 12"/>
+            </svg>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value" id="statServices">0</span>
+            <span class="stat-label">Serviços ativos</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="quick-actions">
+        <h3 class="quick-actions-title">Ações Rápidas</h3>
+        <div class="quick-actions-grid">
+          <a href="#mensagens" class="quick-action" data-section="messages">
+            <span class="quick-action-icon">+</span>
+            <span class="quick-action-text">Ver mensagens</span>
+          </a>
+          <a href="#agendamentos" class="quick-action" data-section="bookings">
+            <span class="quick-action-icon">+</span>
+            <span class="quick-action-text">Ver agendamentos</span>
+          </a>
+          <a href="#depoimentos" class="quick-action" data-section="testimonials">
+            <span class="quick-action-icon">+</span>
+            <span class="quick-action-text">Ver depoimentos</span>
+          </a>
+          <a href="#conteudo" class="quick-action" data-section="content">
+            <span class="quick-action-icon">+</span>
+            <span class="quick-action-text">Editar conteúdo</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="dashboard-chart-card" aria-labelledby="dashboardFlowChartTitle">
+        <div class="dashboard-chart-header">
+          <h3 class="dashboard-chart-title" id="dashboardFlowChartTitle">Fluxo de Atendimento</h3>
+          <p class="dashboard-chart-subtitle">Visao rapida de mensagens, agendamentos e comentarios</p>
+        </div>
+
+        <div class="dashboard-chart" id="dashboardFlowChart">
+          <div class="chart-row">
+            <div class="chart-row-head">
+              <span class="chart-label">Mensagens</span>
+              <span class="chart-value" id="chartMessagesValue">0</span>
+            </div>
+            <div class="chart-bar">
+              <div class="chart-fill chart-fill-messages" id="chartMessagesFill"></div>
+            </div>
+          </div>
+
+          <div class="chart-row">
+            <div class="chart-row-head">
+              <span class="chart-label">Agendamentos</span>
+              <span class="chart-value" id="chartBookingsValue">0</span>
+            </div>
+            <div class="chart-bar">
+              <div class="chart-fill chart-fill-bookings" id="chartBookingsFill"></div>
+            </div>
+          </div>
+
+          <div class="chart-row">
+            <div class="chart-row-head">
+              <span class="chart-label">Comentarios</span>
+              <span class="chart-value" id="chartCommentsValue">0</span>
+            </div>
+            <div class="chart-bar">
+              <div class="chart-fill chart-fill-comments" id="chartCommentsFill"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         MESSAGES SECTION
+         ============================================================ -->
+    <section class="content-section" id="messagesSection">
+      <div class="section-header">
+        <h2 class="section-title">Mensagens</h2>
+        <p class="section-subtitle">Mensagens recebidas pelo formulário de contato</p>
+      </div>
+      
+      <div class="table-container">
+        <table class="data-table" id="messagesTable">
+          <thead>
+            <tr>
+              <th>Status</th>
+              <th>Nome</th>
+              <th>Assunto</th>
+              <th>Data</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Preenchido via JavaScript -->
+          </tbody>
+        </table>
+      </div>
+      
+      <div class="pagination" id="messagesPagination"></div>
+    </section>
+
+    <!-- ============================================================
+         BOOKINGS SECTION
+         ============================================================ -->
+    <section class="content-section" id="bookingsSection">
+      <div class="section-header">
+        <h2 class="section-title">Agendamentos</h2>
+        <p class="section-subtitle">Solicitações de agendamento de avaliação</p>
+      </div>
+      
+      <div class="filter-bar">
+        <label class="filter-label">Filtrar:</label>
+        <select class="filter-select" id="bookingFilter">
+          <option value="all">Todos</option>
+          <option value="pending">Pendentes</option>
+          <option value="confirmed">Confirmados</option>
+          <option value="completed">Concluidos</option>
+          <option value="cancelled">Cancelados</option>
+        </select>
+      </div>
+      
+      <div class="table-container">
+        <table class="data-table" id="bookingsTable">
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>Serviço</th>
+              <th>Data Preferida</th>
+              <th>Status</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Preenchido via JavaScript -->
+          </tbody>
+        </table>
+      </div>
+      
+      <div class="pagination" id="bookingsPagination"></div>
+    </section>
+
+    <!-- ============================================================
+         TESTIMONIALS SECTION
+         ============================================================ -->
+    <section class="content-section" id="testimonialsSection">
+      <div class="section-header">
+        <h2 class="section-title">Depoimentos</h2>
+        <p class="section-subtitle">Gerencie os depoimentos exibidos no site</p>
+      </div>
+      
+      <div class="cards-grid" id="testimonialsGrid">
+        <!-- Preenchido via JavaScript -->
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SERVICES SECTION
+         ============================================================ -->
+    <section class="content-section" id="servicesSection">
+      <div class="section-header">
+        <h2 class="section-title">Serviços</h2>
+        <p class="section-subtitle">Gerencie os serviços oferecidos</p>
+      </div>
+      
+      <button class="btn btn-primary" id="addServiceBtn">
+        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <line x1="12" y1="5" x2="12" y2="19"/>
+          <line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        Adicionar Serviço
+      </button>
+      
+      <div class="cards-grid" id="servicesGrid">
+        <!-- Preenchido via JavaScript -->
+      </div>
+    </section>
+
+    <!-- ============================================================
+         CONTENT SECTION
+         ============================================================ -->
+    <section class="content-section" id="contentSection">
+      <div class="section-header">
+        <h2 class="section-title">Conteúdo do Site</h2>
+        <p class="section-subtitle">Edite as informações exibidas na landing page</p>
+      </div>
+      
+      <form class="content-form" id="contentForm">
+        <div class="form-section">
+          <h3 class="form-section-title">Hero Section</h3>
+          <div class="form-group">
+            <label for="heroTitle" class="form-label">Título Principal</label>
+            <input type="text" id="heroTitle" name="heroTitle" class="form-input">
+          </div>
+          <div class="form-group">
+            <label for="heroSubtitle" class="form-label">Subtítulo</label>
+            <textarea id="heroSubtitle" name="heroSubtitle" class="form-textarea" rows="3"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="heroImageUrl" class="form-label">URL da Imagem (Hero)</label>
+            <input
+              type="url"
+              id="heroImageUrl"
+              name="heroImageUrl"
+              class="form-input"
+              placeholder="https://exemplo.com/minha-imagem.jpg"
+            >
+          </div>
+          <div class="form-group">
+            <label for="aboutImageUrl" class="form-label">URL da Imagem (Sobre)</label>
+            <input
+              type="url"
+              id="aboutImageUrl"
+              name="aboutImageUrl"
+              class="form-input"
+              placeholder="https://exemplo.com/minha-imagem-sobre.jpg"
+            >
+          </div>
+        </div>
+        
+        <div class="form-section">
+          <h3 class="form-section-title">Informações do Terapeuta</h3>
+          <div class="form-group">
+            <label for="therapistName" class="form-label">Nome</label>
+            <input type="text" id="therapistName" name="therapistName" class="form-input">
+          </div>
+          <div class="form-group">
+            <label for="therapistCrefito" class="form-label">CREFITO</label>
+            <input type="text" id="therapistCrefito" name="therapistCrefito" class="form-input">
+          </div>
+          <div class="form-group">
+            <label for="therapistBio" class="form-label">Biografia</label>
+            <textarea id="therapistBio" name="therapistBio" class="form-textarea" rows="4"></textarea>
+          </div>
+        </div>
+        
+        <div class="form-section">
+          <h3 class="form-section-title">Visibilidade de Secoes</h3>
+          <div class="form-group checkbox-group">
+            <label class="checkbox-label">
+              <input type="checkbox" id="showTestimonials" name="showTestimonials" class="checkbox-input">
+              <span class="checkbox-text">Mostrar seção de depoimentos</span>
+            </label>
+          </div>
+          <div class="form-group checkbox-group">
+            <label class="checkbox-label">
+              <input type="checkbox" id="showGallery" name="showGallery" class="checkbox-input">
+              <span class="checkbox-text">Mostrar galeria</span>
+            </label>
+          </div>
+        </div>
+        
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary btn-large" id="saveContentBtn">
+            <span class="btn-text">Salvar Alterações</span>
+            <span class="btn-loader" aria-hidden="true"></span>
+          </button>
+        </div>
+        
+        <div class="form-status" id="contentStatus" role="status" aria-live="polite"></div>
+      </form>
+    </section>
+
+    <!-- ============================================================
+         CONTACTS SECTION
+         ============================================================ -->
+    <section class="content-section" id="contactsSection">
+      <div class="section-header">
+        <h2 class="section-title">Contatos</h2>
+        <p class="section-subtitle">Gerencie dados de contato e redes sociais do site</p>
+      </div>
+
+      <form class="content-form" id="contactsForm">
+        <div class="form-section">
+          <h3 class="form-section-title">Contato</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="whatsappNumber" class="form-label">WhatsApp</label>
+              <input type="text" id="whatsappNumber" name="whatsappNumber" class="form-input">
+            </div>
+            <div class="form-group">
+              <label for="phoneContact" class="form-label">Telefone</label>
+              <input type="text" id="phoneContact" name="phoneContact" class="form-input">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="emailContact" class="form-label">E-mail</label>
+            <input type="email" id="emailContact" name="emailContact" class="form-input">
+          </div>
+          <div class="form-group">
+            <label for="address" class="form-label">Endereço</label>
+            <input type="text" id="address" name="address" class="form-input">
+          </div>
+          <div class="form-group">
+            <label for="businessHours" class="form-label">Horário de Funcionamento</label>
+            <input type="text" id="businessHours" name="businessHours" class="form-input">
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h3 class="form-section-title">Redes Sociais</h3>
+          <div class="form-group">
+            <label for="instagramUrl" class="form-label">Instagram</label>
+            <input type="url" id="instagramUrl" name="instagramUrl" class="form-input">
+          </div>
+          <div class="form-group">
+            <label for="facebookUrl" class="form-label">Facebook</label>
+            <input type="url" id="facebookUrl" name="facebookUrl" class="form-input">
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary btn-large" id="saveContactsBtn">
+            <span class="btn-text">Salvar Contatos</span>
+            <span class="btn-loader" aria-hidden="true"></span>
+          </button>
+        </div>
+
+        <div class="form-status" id="contactsStatus" role="status" aria-live="polite"></div>
+      </form>
+    </section>
+  </main>
+
+  <!-- ============================================================
+       MODAIS
+       ============================================================ -->
+  
+  <!-- Modal de depoimento -->
+  <div class="modal" id="testimonialModal" role="dialog" aria-modal="true" aria-labelledby="testimonialModalTitle" hidden>
+    <div class="modal-overlay"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="testimonialModalTitle">Editar Depoimento</h3>
+        <button class="modal-close" aria-label="Fechar modal">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <form class="modal-form" id="testimonialForm">
+        <input type="hidden" id="testimonialId" name="id">
+        <div class="form-group">
+          <label for="testimonialName" class="form-label">Nome *</label>
+          <input type="text" id="testimonialName" name="name" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label for="testimonialText" class="form-label">Depoimento *</label>
+          <textarea id="testimonialText" name="text" class="form-textarea" rows="4" required></textarea>
+        </div>
+        <div class="form-group">
+          <label for="testimonialRating" class="form-label">Avaliação</label>
+          <select id="testimonialRating" name="rating" class="form-select">
+            <option value="0">0 estrela</option>
+            <option value="5">5 estrelas</option>
+            <option value="4">4 estrelas</option>
+            <option value="3">3 estrelas</option>
+            <option value="2">2 estrelas</option>
+            <option value="1">1 estrela</option>
+          </select>
+        </div>
+        <div class="form-group checkbox-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="testimonialActive" name="isActive" class="checkbox-input" checked>
+            <span class="checkbox-text">Ativo</span>
+          </label>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-outline modal-cancel">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal de serviço -->
+  <div class="modal" id="serviceModal" role="dialog" aria-modal="true" aria-labelledby="serviceModalTitle" hidden>
+    <div class="modal-overlay"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="serviceModalTitle">Adicionar Serviço</h3>
+        <button class="modal-close" aria-label="Fechar modal">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <form class="modal-form" id="serviceForm">
+        <input type="hidden" id="serviceId" name="id">
+        <div class="form-group">
+          <label for="serviceTitle" class="form-label">Título *</label>
+          <input type="text" id="serviceTitle" name="title" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label for="serviceDescription" class="form-label">Descricao *</label>
+          <textarea id="serviceDescription" name="description" class="form-textarea" rows="3" required></textarea>
+        </div>
+        <div class="form-group">
+          <label for="serviceIcon" class="form-label">Icone</label>
+          <input type="text" id="serviceIcon" name="icon" class="form-input" placeholder="Emoji ou nome (ex: ðŸ¦´, ðŸ’ª, heart)">
+        </div>
+        <div class="form-group">
+          <label for="serviceOrder" class="form-label">Ordem</label>
+          <input type="number" id="serviceOrder" name="orderIndex" class="form-input" min="0" value="0">
+        </div>
+        <div class="form-group checkbox-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="serviceActive" name="isActive" class="checkbox-input" checked>
+            <span class="checkbox-text">Ativo</span>
+          </label>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-outline modal-cancel">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal de visualização de mensagem -->
+  <div class="modal" id="messageModal" role="dialog" aria-modal="true" aria-labelledby="messageModalTitle" hidden>
+    <div class="modal-overlay"></div>
+    <div class="modal-content modal-content-large">
+      <div class="modal-header">
+        <h3 class="modal-title" id="messageModalTitle">Mensagem</h3>
+        <button class="modal-close" aria-label="Fechar modal">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <div class="message-details" id="messageDetails">
+        <!-- Preenchido via JavaScript -->
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline modal-cancel">Fechar</button>
+        <button type="button" class="btn btn-error" id="deleteMessageBtn">Excluir</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de confirmação -->
+  <div class="modal" id="confirmModal" role="dialog" aria-modal="true" aria-labelledby="confirmModalTitle" hidden>
+    <div class="modal-overlay"></div>
+    <div class="modal-content modal-content-small">
+      <div class="modal-header">
+        <h3 class="modal-title" id="confirmModalTitle">Confirmar Exclusao</h3>
+        <button class="modal-close" aria-label="Fechar modal">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <p class="confirm-text">Tem certeza que deseja excluir este item? Esta ação não pode ser desfeita.</p>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline modal-cancel">Cancelar</button>
+        <button type="button" class="btn btn-error" id="confirmDeleteBtn">Excluir</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast notifications -->
+  <div class="toast-container" id="toastContainer" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- Script do dashboard -->
+  <script src="/admin/js/dashboard.js"></script>
+</body>
+</html>
+

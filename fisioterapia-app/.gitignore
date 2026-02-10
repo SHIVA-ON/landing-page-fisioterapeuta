@@ -1,0 +1,46 @@
+# ============================================================
+# ARQUIVOS IGNORADOS PELO GIT
+# ============================================================
+
+# Dependencias
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Banco de dados (nao versionar em producao)
+/database/*.db
+/database/*.db-journal
+
+# Arquivos de ambiente (contem segredos)
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs/
+*.log
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+
+# IDEs e editores
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Arquivos temporarios
+tmp/
+temp/
+*.tmp
+
+# Coverage e testes
+coverage/
+.nyc_output/
+
+# Build (se houver)
+dist/
+build/
