@@ -1,5 +1,8 @@
 {
-  "dependencies": {
-    "express": "^5.2.1"
+  "name": "landing-page-fisioterapeuta-root",
+  "private": true,
+  "scripts": {
+    "postinstall": "npm --prefix fisioterapia-app install",
+    "start": "npm --prefix fisioterapia-app run init-db && node server.js"
   }
 }

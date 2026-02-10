@@ -16,14 +16,14 @@
 
 const express = require('express');
 const path = require('path');
-const fs = require('fs');
 const session = require('express-session');
-const SQLiteStore = require('connect-sqlite3')(session);
+const PgSession = require('connect-pg-simple')(session);
 const helmet = require('helmet');
 const cors = require('cors');
 const rateLimit = require('express-rate-limit');
 const csrf = require('csurf');
 require('dotenv').config();
+const { getPool } = require('./db/sqlite-pg-compat');
 
 // Importacao de rotas
 const publicRoutes = require('./routes/public');
@@ -39,16 +39,6 @@ const { errorHandler, notFound } = require('./middleware/errorHandler');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const DB_DIR = path.join(__dirname, '../database');
-const DB_PATH = path.join(DB_DIR, 'fisioterapia.db');
-
-if (!fs.existsSync(DB_DIR)) {
-  fs.mkdirSync(DB_DIR, { recursive: true });
-}
-
-if (!fs.existsSync(DB_PATH)) {
-  console.warn('[WARN] Banco de dados nao encontrado. Execute: npm run init-db');
-}
 
 // ============================================================
 // CONFIGURACAO DE SEGURANCA - HELMET
@@ -123,13 +113,13 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 // ============================================================
 // CONFIGURACAO DE SESSOES
 // ============================================================
-// Sessoes seguras armazenadas em SQLite
+// Sessoes seguras armazenadas em PostgreSQL
 
 app.use(session({
-  store: new SQLiteStore({
-    db: 'sessions.db',
-    dir: path.join(__dirname, '../database'),
-    concurrentDB: true
+  store: new PgSession({
+    pool: getPool(),
+    tableName: 'user_sessions',
+    createTableIfMissing: true
   }),
   secret: process.env.SESSION_SECRET || 'chave-secreta-muito-segura-2026',
   name: 'sessionId', // Nome customizado para nao revelar tecnologia

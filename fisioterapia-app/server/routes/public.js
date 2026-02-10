@@ -14,8 +14,7 @@
 
 const express = require('express');
 const router = express.Router();
-const sqlite3 = require('sqlite3').verbose();
-const path = require('path');
+const sqlite3 = require('../db/sqlite-pg-compat').verbose();
 
 // Importacao de validadores
 const { contactValidation, bookingValidation, publicTestimonialValidation } = require('../utils/validators');
@@ -28,7 +27,7 @@ const bcrypt = require('bcrypt');
 // CONEXAO COM BANCO DE DADOS
 // ============================================================
 
-const DB_PATH = path.join(__dirname, '../../database/fisioterapia.db');
+const DB_PATH = process.env.DATABASE_URL || 'postgres';
 
 function getDb() {
   return new sqlite3.Database(DB_PATH);

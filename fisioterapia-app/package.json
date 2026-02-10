@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
-    "init-db": "node server/init-db.js"
+    "init-db": "node server/init-db-postgres.js",
+    "init-db:sqlite": "node server/init-db.js"
   },
   "keywords": ["fisioterapia", "landing-page", "admin", "healthcare"],
   "author": "",
@@ -21,7 +22,9 @@
     "csurf": "^1.11.0",
     "helmet": "^7.1.0",
     "cors": "^2.8.5",
+    "connect-pg-simple": "^10.0.0",
     "dotenv": "^16.3.1",
+    "pg": "^8.16.3",
     "sqlite3": "^5.1.6",
     "uuid": "^9.0.1"
   },

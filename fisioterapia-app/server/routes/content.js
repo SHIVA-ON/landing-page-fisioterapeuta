@@ -15,8 +15,7 @@
 
 const express = require('express');
 const router = express.Router();
-const sqlite3 = require('sqlite3').verbose();
-const path = require('path');
+const sqlite3 = require('../db/sqlite-pg-compat').verbose();
 
 // Importacao de middleware de autenticacao
 const { requireAuth } = require('../middleware/auth');
@@ -25,7 +24,7 @@ const { requireAuth } = require('../middleware/auth');
 // CONEXAO COM BANCO DE DADOS
 // ============================================================
 
-const DB_PATH = path.join(__dirname, '../../database/fisioterapia.db');
+const DB_PATH = process.env.DATABASE_URL || 'postgres';
 
 function getDb() {
   return new sqlite3.Database(DB_PATH);
