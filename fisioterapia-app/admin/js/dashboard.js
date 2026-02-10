@@ -77,6 +77,13 @@
     });
   }
 
+  function formatDateOnly(dateString) {
+    if (!dateString) return '-';
+    const [year, month, day] = String(dateString).split('-');
+    if (!year || !month || !day) return formatDate(dateString).split(' ')[0] || '-';
+    return `${day.padStart(2, '0')}/${month.padStart(2, '0')}/${year}`;
+  }
+
   /**
    * Escapa HTML para prevenir XSS
    */
@@ -281,6 +288,7 @@
         break;
       case 'bookings':
         await loadBookings();
+        await loadStats();
         break;
       case 'testimonials':
         await loadTestimonials();
@@ -518,9 +526,12 @@
     const tbody = document.querySelector('#bookingsTable tbody');
     tbody.innerHTML = state.bookings.map(booking => `
       <tr data-id="${booking.id}">
-        <td>${escapeHtml(booking.name)}</td>
+        <td>
+          <div><strong>${escapeHtml(booking.name)}</strong></div>
+          ${booking.notes ? `<div class="table-subtext">${escapeHtml(truncate(booking.notes, 90))}</div>` : ''}
+        </td>
         <td>${escapeHtml(booking.service_type || '-')}</td>
-        <td>${booking.preferred_date ? formatDate(booking.preferred_date).split(' ')[0] : '-'}</td>
+        <td>${booking.preferred_date ? formatDateOnly(booking.preferred_date) : '-'}</td>
         <td>
           <span class="status-badge status-${booking.status}">
             ${getStatusLabel(booking.status)}
@@ -543,6 +554,12 @@
     tbody.querySelectorAll('.status-select').forEach(select => {
       select.addEventListener('change', () => updateBookingStatus(select.dataset.id, select.value));
     });
+
+    const pendingCount = state.bookings.filter((b) => b.status === 'pending').length;
+    const bookingsBadge = document.getElementById('bookingsBadge');
+    if (bookingsBadge) {
+      bookingsBadge.textContent = String(pendingCount);
+    }
   }
 
   function getStatusLabel(status) {

@@ -289,8 +289,8 @@ router.get('/messages', requireAuth, async (req, res) => {
     const params = [];
     
     if (unreadOnly === 'true') {
-      query += ' WHERE is_read = 0';
-      countQuery += ' WHERE is_read = 0';
+      query += ' WHERE is_read = false';
+      countQuery += ' WHERE is_read = false';
     }
     
     query += ' ORDER BY created_at DESC LIMIT ? OFFSET ?';
@@ -347,7 +347,7 @@ router.put('/messages/:id/read', requireAuth, idParamValidation, async (req, res
     await new Promise((resolve, reject) => {
       db.run(
         'UPDATE messages SET is_read = ? WHERE id = ?',
-        [isRead ? 1 : 0, id],
+        [!!isRead, id],
         function(err) {
           if (err) reject(err);
           else resolve(this.changes);
@@ -855,7 +855,7 @@ router.get('/stats', requireAuth, async (req, res) => {
     // Contagem de mensagens nao lidas
     const unreadMessages = await new Promise((resolve, reject) => {
       db.get(
-        'SELECT COUNT(*) as count FROM messages WHERE is_read = 0',
+        'SELECT COUNT(*) as count FROM messages WHERE is_read = false',
         [],
         (err, row) => {
           if (err) reject(err);
@@ -891,7 +891,7 @@ router.get('/stats', requireAuth, async (req, res) => {
     // Total de depoimentos ativos
     const activeTestimonials = await new Promise((resolve, reject) => {
       db.get(
-        'SELECT COUNT(*) as count FROM testimonials WHERE is_active = 1',
+        'SELECT COUNT(*) as count FROM testimonials WHERE is_active = true',
         [],
         (err, row) => {
           if (err) reject(err);
@@ -903,7 +903,7 @@ router.get('/stats', requireAuth, async (req, res) => {
     // Total de servicos ativos
     const activeServices = await new Promise((resolve, reject) => {
       db.get(
-        'SELECT COUNT(*) as count FROM services WHERE is_active = 1',
+        'SELECT COUNT(*) as count FROM services WHERE is_active = true',
         [],
         (err, row) => {
           if (err) reject(err);

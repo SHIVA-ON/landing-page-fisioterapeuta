@@ -104,7 +104,7 @@ async function logLoginAttempt(ip, username, success = false) {
     const db = new sqlite3.Database(DB_PATH);
     db.run(
       'INSERT INTO login_attempts (ip_address, username, success) VALUES (?, ?, ?)',
-      [ip, username, success ? 1 : 0],
+      [ip, username, !!success],
       function(err) {
         db.close();
         if (err) {
@@ -130,7 +130,7 @@ async function isIpBlocked(ip, maxAttempts = 5, windowMinutes = 15) {
     
     db.get(
       `SELECT COUNT(*) as count FROM login_attempts 
-       WHERE ip_address = ? AND success = 0 AND attempted_at > ?`,
+       WHERE ip_address = ? AND success = false AND attempted_at > ?`,
       [ip, windowTime],
       (err, row) => {
         db.close();
