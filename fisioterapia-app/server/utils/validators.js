@@ -98,7 +98,12 @@ const bookingValidation = [
     .optional()
     .isISO8601().withMessage('Data invalida')
     .custom((value) => {
-      const date = new Date(value);
+      // Parse local para evitar problema de fuso com string YYYY-MM-DD
+      const parts = String(value).split('-').map(Number);
+      if (parts.length !== 3 || parts.some(Number.isNaN)) {
+        throw new Error('Data invalida');
+      }
+      const date = new Date(parts[0], parts[1] - 1, parts[2], 0, 0, 0, 0);
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       if (date < today) {

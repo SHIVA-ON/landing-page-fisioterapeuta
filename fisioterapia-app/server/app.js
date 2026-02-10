@@ -40,6 +40,9 @@ const { errorHandler, notFound } = require('./middleware/errorHandler');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Necessario em Railway/Reverse Proxy para cookies secure funcionarem
+app.set('trust proxy', 1);
+
 // ============================================================
 // CONFIGURACAO DE SEGURANCA - HELMET
 // ============================================================
@@ -123,12 +126,13 @@ app.use(session({
   }),
   secret: process.env.SESSION_SECRET || 'chave-secreta-muito-segura-2026',
   name: 'sessionId', // Nome customizado para nao revelar tecnologia
+  proxy: true,
   resave: false,
   saveUninitialized: false,
   cookie: {
     secure: process.env.NODE_ENV === 'production', // HTTPS apenas em producao
     httpOnly: true, // Previne acesso via JavaScript
-    sameSite: 'strict', // Protecao contra CSRF
+    sameSite: 'lax', // Compatível com redirecionamentos normais do login
     maxAge: 24 * 60 * 60 * 1000 // 24 horas
   }
 }));
