@@ -1,0 +1,4 @@
+node_modules/
+fisioterapia-app/node_modules/
+.env
+fisioterapia-app/.env
