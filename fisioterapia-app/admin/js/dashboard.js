@@ -1062,6 +1062,7 @@
         setWeekdayCheckboxes(data.data.booking_enabled_weekdays || '1,2,3,4,5');
         setCheckboxValue('showTestimonials', isTruthySetting(data.data.show_testimonials));
         setCheckboxValue('showGallery', isTruthySetting(data.data.show_gallery));
+        setCheckboxValue('emailNotificationsEnabled', isTruthySetting(data.data.email_notifications_enabled));
       }
     } catch (error) {
       console.error('Erro ao carregar conteúdo:', error);
@@ -1127,7 +1128,8 @@
       bookingEnabledWeekdays: selectedWeekdaysCsv,
       bookingBlockedDates: normalizeBlockedDates(document.getElementById('bookingBlockedDates').value),
       showTestimonials: document.getElementById('showTestimonials').checked,
-      showGallery: document.getElementById('showGallery').checked
+      showGallery: document.getElementById('showGallery').checked,
+      emailNotificationsEnabled: document.getElementById('emailNotificationsEnabled').checked
     };
     
     btn.classList.add('loading');

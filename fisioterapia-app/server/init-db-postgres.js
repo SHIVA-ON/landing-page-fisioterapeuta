@@ -146,6 +146,7 @@ async function run() {
     ['business_hours', 'Segunda a Sexta: 8h as 18h | Sabado: 8h as 12h'],
     ['show_testimonials', 'true'],
     ['show_gallery', 'true'],
+    ['email_notifications_enabled', 'true'],
     ['therapist_name', 'Dra. Ana Fisioterapeuta'],
     ['therapist_crefito', 'CREFITO-3/12345'],
     ['therapist_bio', 'Fisioterapeuta com mais de 10 anos de experiencia em reabilitacao ortopedica e esportiva.'],

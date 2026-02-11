@@ -28,6 +28,7 @@ const { getPool } = require('./db/sqlite-pg-compat');
 const publicRoutes = require('./routes/public');
 const adminRoutes = require('./routes/admin');
 const contentRoutes = require('./routes/content');
+const appointmentsRoutes = require('./routes/appointments.route');
 
 // Importacao de middlewares customizados
 const { errorHandler, notFound } = require('./middleware/errorHandler');
@@ -149,6 +150,7 @@ app.use('/admin', express.static(path.join(__dirname, '../admin'), {
 // ============================================================
 
 // Rotas publicas (landing page, contato, etc.)
+app.use('/api', appointmentsRoutes);
 app.use('/api', publicRoutes);
 
 // Rotas de conteudo dinamico

@@ -279,6 +279,7 @@ async function seedData() {
     { key: 'business_hours', value: 'Segunda a Sexta: 8h as 18h | Sabado: 8h as 12h' },
     { key: 'show_testimonials', value: 'true' },
     { key: 'show_gallery', value: 'true' },
+    { key: 'email_notifications_enabled', value: 'true' },
     { key: 'therapist_name', value: 'Dra. Ana Fisioterapeuta' },
     { key: 'therapist_crefito', value: 'CREFITO-3/12345' },
     { key: 'therapist_bio', value: 'Fisioterapeuta com mais de 10 anos de experiencia em reabilitacao ortopedica e esportiva. Especialista em Pilates clinico e libergacao miofascial.' }
