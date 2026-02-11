@@ -475,6 +475,50 @@
             </label>
           </div>
         </div>
+
+        <div class="form-section">
+          <h3 class="form-section-title">Agenda de Agendamentos</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="bookingWorkStart" class="form-label">Inicio do expediente</label>
+              <input type="time" id="bookingWorkStart" name="bookingWorkStart" class="form-input">
+            </div>
+            <div class="form-group">
+              <label for="bookingWorkEnd" class="form-label">Fim do expediente</label>
+              <input type="time" id="bookingWorkEnd" name="bookingWorkEnd" class="form-input">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="bookingSlotIntervalMinutes" class="form-label">Intervalo entre horarios (min)</label>
+              <input type="number" id="bookingSlotIntervalMinutes" name="bookingSlotIntervalMinutes" class="form-input" min="15" max="180" step="5">
+            </div>
+            <div class="form-group">
+              <label for="bookingMaxPerSlot" class="form-label">Limite por horario</label>
+              <input type="number" id="bookingMaxPerSlot" name="bookingMaxPerSlot" class="form-input" min="1" max="20" step="1">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="bookingHorizonDays" class="form-label">Dias futuros liberados para agendamento</label>
+            <input type="number" id="bookingHorizonDays" name="bookingHorizonDays" class="form-input" min="7" max="180" step="1">
+          </div>
+          <div class="form-group">
+            <span class="form-label">Dias disponiveis da semana</span>
+            <div class="checkbox-group">
+              <label class="checkbox-label"><input type="checkbox" class="checkbox-input booking-weekday" value="1"> <span class="checkbox-text">Segunda</span></label>
+              <label class="checkbox-label"><input type="checkbox" class="checkbox-input booking-weekday" value="2"> <span class="checkbox-text">Terca</span></label>
+              <label class="checkbox-label"><input type="checkbox" class="checkbox-input booking-weekday" value="3"> <span class="checkbox-text">Quarta</span></label>
+              <label class="checkbox-label"><input type="checkbox" class="checkbox-input booking-weekday" value="4"> <span class="checkbox-text">Quinta</span></label>
+              <label class="checkbox-label"><input type="checkbox" class="checkbox-input booking-weekday" value="5"> <span class="checkbox-text">Sexta</span></label>
+              <label class="checkbox-label"><input type="checkbox" class="checkbox-input booking-weekday" value="6"> <span class="checkbox-text">Sabado</span></label>
+              <label class="checkbox-label"><input type="checkbox" class="checkbox-input booking-weekday" value="0"> <span class="checkbox-text">Domingo</span></label>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="bookingBlockedDates" class="form-label">Datas bloqueadas (AAAA-MM-DD, separadas por virgula)</label>
+            <textarea id="bookingBlockedDates" name="bookingBlockedDates" class="form-textarea" rows="3" placeholder="2026-02-20, 2026-02-21"></textarea>
+          </div>
+        </div>
         
         <div class="form-actions">
           <button type="submit" class="btn btn-primary btn-large" id="saveContentBtn">

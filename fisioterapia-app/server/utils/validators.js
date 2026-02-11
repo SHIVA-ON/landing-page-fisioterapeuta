@@ -109,12 +109,6 @@ const bookingValidation = [
       if (date < today) {
         throw new Error('Data nao pode ser no passado');
       }
-      // Limita agendamento a 90 dias no futuro
-      const maxDate = new Date();
-      maxDate.setDate(maxDate.getDate() + 90);
-      if (date > maxDate) {
-        throw new Error('Agendamento permitido apenas ate 90 dias no futuro');
-      }
       return true;
     }),
   

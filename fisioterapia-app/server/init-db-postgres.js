@@ -148,7 +148,14 @@ async function run() {
     ['show_gallery', 'true'],
     ['therapist_name', 'Dra. Ana Fisioterapeuta'],
     ['therapist_crefito', 'CREFITO-3/12345'],
-    ['therapist_bio', 'Fisioterapeuta com mais de 10 anos de experiencia em reabilitacao ortopedica e esportiva.']
+    ['therapist_bio', 'Fisioterapeuta com mais de 10 anos de experiencia em reabilitacao ortopedica e esportiva.'],
+    ['booking_work_start', '08:00'],
+    ['booking_work_end', '18:00'],
+    ['booking_slot_interval_minutes', '60'],
+    ['booking_max_per_slot', '1'],
+    ['booking_horizon_days', '90'],
+    ['booking_enabled_weekdays', '1,2,3,4,5'],
+    ['booking_blocked_dates', '']
   ];
 
   for (const [key, value] of defaultSettings) {

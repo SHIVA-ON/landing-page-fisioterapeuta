@@ -522,6 +522,69 @@ router.put('/bookings/:id/status', requireAuth, idParamValidation, async (req, r
 });
 
 // ============================================================
+// ROTA: ATUALIZAR SERVICO DO AGENDAMENTO
+// ============================================================
+// PUT /api/admin/bookings/:id/service
+
+router.put('/bookings/:id/service', requireAuth, idParamValidation, async (req, res) => {
+  const { id } = req.params;
+  const serviceType = String(req.body.serviceType || '').trim();
+
+  if (!serviceType) {
+    return res.status(400).json({
+      success: false,
+      message: 'Servico invalido'
+    });
+  }
+
+  const db = getDb();
+
+  try {
+    const service = await new Promise((resolve, reject) => {
+      db.get(
+        'SELECT id FROM services WHERE title = ? AND is_active = true',
+        [serviceType],
+        (err, row) => {
+          if (err) reject(err);
+          else resolve(row);
+        }
+      );
+    });
+
+    if (!service) {
+      return res.status(400).json({
+        success: false,
+        message: 'Servico nao disponivel para selecao'
+      });
+    }
+
+    await new Promise((resolve, reject) => {
+      db.run(
+        'UPDATE booking_requests SET service_type = ? WHERE id = ?',
+        [serviceType, id],
+        function(err) {
+          if (err) reject(err);
+          else resolve(this.changes);
+        }
+      );
+    });
+
+    res.json({
+      success: true,
+      message: 'Servico do agendamento atualizado com sucesso'
+    });
+  } catch (error) {
+    console.error('[ERROR] Erro ao atualizar servico do agendamento:', error.message);
+    res.status(500).json({
+      success: false,
+      message: 'Erro ao atualizar servico do agendamento'
+    });
+  } finally {
+    db.close();
+  }
+});
+
+// ============================================================
 // ROTA: EXCLUIR AGENDAMENTO
 // ============================================================
 // DELETE /api/admin/bookings/:id

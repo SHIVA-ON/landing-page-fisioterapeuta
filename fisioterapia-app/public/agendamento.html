@@ -56,6 +56,23 @@
       opacity: 0.7;
       cursor: wait;
     }
+    .booking-helper {
+      margin-top: 6px;
+      font-size: 13px;
+      color: #5d6b82;
+    }
+    .booking-actions {
+      display: grid;
+      gap: 10px;
+    }
+    .btn-secondary {
+      background: #ffffff !important;
+      color: #264653 !important;
+      border: 1px solid #cfd8e3 !important;
+      text-decoration: none;
+      display: inline-block;
+      text-align: center;
+    }
     .booking-status {
       margin-top: 12px;
       min-height: 24px;
@@ -86,24 +103,24 @@
 
       <div>
         <label for="preferredDate">Data preferida</label>
-        <input id="preferredDate" name="preferredDate" type="date">
+        <select id="preferredDate" name="preferredDate" required>
+          <option value="">Carregando datas...</option>
+        </select>
+        <div id="preferredDateHelper" class="booking-helper"></div>
       </div>
 
       <div>
         <label for="preferredTime">Horário preferido</label>
-        <input id="preferredTime" name="preferredTime" type="time">
+        <select id="preferredTime" name="preferredTime" required>
+          <option value="">Selecione uma data primeiro</option>
+        </select>
+        <div id="preferredTimeHelper" class="booking-helper"></div>
       </div>
 
       <div>
         <label for="serviceType">Serviço</label>
-        <select id="serviceType" name="serviceType">
+        <select id="serviceType" name="serviceType" required>
           <option value="">Selecione</option>
-          <option>Fisioterapia Ortopédica</option>
-          <option>Fisioterapia Esportiva</option>
-          <option>Pilates Clínico</option>
-          <option>Liberação Miofascial</option>
-          <option>Reeducação Postural</option>
-          <option>Fisioterapia Geriátrica</option>
         </select>
       </div>
 
@@ -112,7 +129,10 @@
         <textarea id="notes" name="notes" rows="4" maxlength="1000"></textarea>
       </div>
 
-      <button id="submitBtn" type="submit">Enviar agendamento</button>
+      <div class="booking-actions">
+        <button id="submitBtn" type="submit">Enviar agendamento</button>
+        <a href="/" class="btn-secondary">Voltar</a>
+      </div>
     </form>
 
     <div id="bookingStatus" class="booking-status" role="status" aria-live="polite"></div>

@@ -124,6 +124,38 @@
     el.textContent = message;
   }
 
+  function parseWeekdaysCsv(value) {
+    return String(value || '')
+      .split(',')
+      .map((item) => parseInt(item.trim(), 10))
+      .filter((item) => Number.isInteger(item) && item >= 0 && item <= 6);
+  }
+
+  function setWeekdayCheckboxes(csvValue) {
+    const selected = new Set(parseWeekdaysCsv(csvValue));
+    document.querySelectorAll('.booking-weekday').forEach((checkbox) => {
+      const weekday = parseInt(checkbox.value, 10);
+      checkbox.checked = selected.has(weekday);
+    });
+  }
+
+  function getSelectedWeekdaysCsv() {
+    const values = Array.from(document.querySelectorAll('.booking-weekday:checked'))
+      .map((checkbox) => parseInt(checkbox.value, 10))
+      .filter((value) => Number.isInteger(value) && value >= 0 && value <= 6)
+      .sort((a, b) => a - b);
+
+    return values.join(',');
+  }
+
+  function normalizeBlockedDates(value) {
+    return String(value || '')
+      .split(',')
+      .map((item) => item.trim())
+      .filter((item) => /^\d{4}-\d{2}-\d{2}$/.test(item))
+      .join(',');
+  }
+
   // ============================================================
   // TOAST NOTIFICATIONS
   // ============================================================
@@ -512,6 +544,9 @@
 
   async function loadBookings(page = 1, status = 'all') {
     try {
+      if (!state.services.length) {
+        await loadServices(true);
+      }
       const url = `${CONFIG.apiUrl}/bookings?page=${page}&limit=${CONFIG.itemsPerPage}&status=${status}`;
       const response = await fetch(url);
       const data = await response.json();
@@ -530,13 +565,33 @@
 
   function renderBookings() {
     const tbody = document.querySelector('#bookingsTable tbody');
+    const activeServiceTitles = state.services
+      .filter((service) => service.is_active)
+      .map((service) => service.title);
+
+    const getServiceOptions = (currentService) => {
+      const options = new Set(activeServiceTitles);
+      if (currentService) options.add(currentService);
+      const optionList = Array.from(options);
+      if (!optionList.length) {
+        return '<option value="">Sem servicos ativos</option>';
+      }
+      return optionList.map((title) => (
+        `<option value="${escapeHtml(title)}" ${title === currentService ? 'selected' : ''}>${escapeHtml(title)}</option>`
+      )).join('');
+    };
+
     tbody.innerHTML = state.bookings.map(booking => `
       <tr data-id="${booking.id}">
         <td>
           <div><strong>${escapeHtml(booking.name)}</strong></div>
           ${booking.notes ? `<div class="table-subtext">${escapeHtml(truncate(booking.notes, 90))}</div>` : ''}
         </td>
-        <td>${escapeHtml(booking.service_type || '-')}</td>
+        <td>
+          <select class="filter-select booking-service-select" data-id="${booking.id}">
+            ${getServiceOptions(booking.service_type)}
+          </select>
+        </td>
         <td>${booking.preferred_date ? formatDateOnly(booking.preferred_date) : '-'}</td>
         <td>
           <span class="status-badge status-${booking.status}">
@@ -567,6 +622,10 @@
     // Event listeners para mudanca de status
     tbody.querySelectorAll('.status-select').forEach(select => {
       select.addEventListener('change', () => updateBookingStatus(select.dataset.id, select.value));
+    });
+
+    tbody.querySelectorAll('.booking-service-select').forEach((select) => {
+      select.addEventListener('change', () => updateBookingService(select.dataset.id, select.value));
     });
 
     tbody.querySelectorAll('.delete-booking').forEach((btn) => {
@@ -610,6 +669,27 @@
     } catch (error) {
       console.error('Erro ao atualizar status:', error);
       showToast('Erro ao atualizar status', 'error');
+    }
+  }
+
+  async function updateBookingService(id, serviceType) {
+    try {
+      const response = await fetch(`${CONFIG.apiUrl}/bookings/${id}/service`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ serviceType })
+      });
+      const data = await response.json();
+
+      if (data.success) {
+        showToast('Servico do agendamento atualizado com sucesso');
+        loadBookings(state.pagination.bookings.page, document.getElementById('bookingFilter')?.value || 'all');
+      } else {
+        showToast(data.message || 'Erro ao atualizar servico do agendamento', 'error');
+      }
+    } catch (error) {
+      console.error('Erro ao atualizar servico do agendamento:', error);
+      showToast('Erro ao atualizar servico do agendamento', 'error');
     }
   }
 
@@ -802,7 +882,7 @@
   // SERVICOS
   // ============================================================
 
-  async function loadServices() {
+  async function loadServices(silent = false) {
     try {
       const response = await fetch(`${CONFIG.apiUrl}/services`);
       const data = await response.json();
@@ -813,7 +893,9 @@
       }
     } catch (error) {
       console.error('Erro ao carregar serviços:', error);
-      showToast('Erro ao carregar serviços', 'error');
+      if (!silent) {
+        showToast('Erro ao carregar serviços', 'error');
+      }
     }
   }
 
@@ -971,6 +1053,13 @@
         setInputValue('therapistName', data.data.therapist_name);
         setInputValue('therapistCrefito', data.data.therapist_crefito);
         setInputValue('therapistBio', data.data.therapist_bio);
+        setInputValue('bookingWorkStart', data.data.booking_work_start || '08:00');
+        setInputValue('bookingWorkEnd', data.data.booking_work_end || '18:00');
+        setInputValue('bookingSlotIntervalMinutes', data.data.booking_slot_interval_minutes || '60');
+        setInputValue('bookingMaxPerSlot', data.data.booking_max_per_slot || '1');
+        setInputValue('bookingHorizonDays', data.data.booking_horizon_days || '90');
+        setInputValue('bookingBlockedDates', data.data.booking_blocked_dates || '');
+        setWeekdayCheckboxes(data.data.booking_enabled_weekdays || '1,2,3,4,5');
         setCheckboxValue('showTestimonials', isTruthySetting(data.data.show_testimonials));
         setCheckboxValue('showGallery', isTruthySetting(data.data.show_gallery));
       }
@@ -1006,6 +1095,21 @@
     e.preventDefault();
     
     const btn = document.getElementById('saveContentBtn');
+    const workStart = document.getElementById('bookingWorkStart').value || '08:00';
+    const workEnd = document.getElementById('bookingWorkEnd').value || '18:00';
+    const selectedWeekdaysCsv = getSelectedWeekdaysCsv();
+
+    if (!selectedWeekdaysCsv) {
+      setFormStatus('contentStatus', 'Selecione pelo menos um dia da semana para agenda.', 'error');
+      showToast('Selecione pelo menos um dia da semana para agenda.', 'error');
+      return;
+    }
+
+    if (workStart >= workEnd) {
+      setFormStatus('contentStatus', 'O fim do expediente deve ser maior que o inicio.', 'error');
+      showToast('O fim do expediente deve ser maior que o inicio.', 'error');
+      return;
+    }
     
     const data = {
       heroTitle: document.getElementById('heroTitle').value,
@@ -1015,6 +1119,13 @@
       therapistName: document.getElementById('therapistName').value,
       therapistCrefito: document.getElementById('therapistCrefito').value,
       therapistBio: document.getElementById('therapistBio').value,
+      bookingWorkStart: workStart,
+      bookingWorkEnd: workEnd,
+      bookingSlotIntervalMinutes: parseInt(document.getElementById('bookingSlotIntervalMinutes').value, 10) || 60,
+      bookingMaxPerSlot: parseInt(document.getElementById('bookingMaxPerSlot').value, 10) || 1,
+      bookingHorizonDays: parseInt(document.getElementById('bookingHorizonDays').value, 10) || 90,
+      bookingEnabledWeekdays: selectedWeekdaysCsv,
+      bookingBlockedDates: normalizeBlockedDates(document.getElementById('bookingBlockedDates').value),
       showTestimonials: document.getElementById('showTestimonials').checked,
       showGallery: document.getElementById('showGallery').checked
     };

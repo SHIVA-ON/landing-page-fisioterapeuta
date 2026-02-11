@@ -103,7 +103,14 @@ router.put('/settings', requireAuth, async (req, res) => {
     'show_gallery',
     'therapist_name',
     'therapist_crefito',
-    'therapist_bio'
+    'therapist_bio',
+    'booking_work_start',
+    'booking_work_end',
+    'booking_slot_interval_minutes',
+    'booking_max_per_slot',
+    'booking_horizon_days',
+    'booking_enabled_weekdays',
+    'booking_blocked_dates'
   ];
   
   // Filtra apenas chaves permitidas
@@ -210,7 +217,14 @@ router.put('/settings/:key', requireAuth, async (req, res) => {
     'show_gallery',
     'therapist_name',
     'therapist_crefito',
-    'therapist_bio'
+    'therapist_bio',
+    'booking_work_start',
+    'booking_work_end',
+    'booking_slot_interval_minutes',
+    'booking_max_per_slot',
+    'booking_horizon_days',
+    'booking_enabled_weekdays',
+    'booking_blocked_dates'
   ];
   
   if (!allowedKeys.includes(key)) {
