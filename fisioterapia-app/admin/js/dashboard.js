@@ -331,26 +331,32 @@
   }
 
   function renderDashboardChart(stats) {
+    const dashboardLimit = Number(stats.dashboardLimit || 1000);
     const values = {
-      messages: Number(stats.unreadMessages || 0),
+      messages: Number(stats.totalMessages ?? stats.unreadMessages ?? 0),
       bookings: Number(stats.totalBookings ?? stats.pendingBookings ?? 0),
-      comments: Number(stats.activeTestimonials || 0)
+      testimonials: Number(stats.activeTestimonials || 0)
     };
-    const maxValue = Math.max(values.messages, values.bookings, values.comments, 1);
 
     const chartConfig = [
       { valueId: 'chartMessagesValue', fillId: 'chartMessagesFill', value: values.messages },
       { valueId: 'chartBookingsValue', fillId: 'chartBookingsFill', value: values.bookings },
-      { valueId: 'chartCommentsValue', fillId: 'chartCommentsFill', value: values.comments }
+      { valueId: 'chartCommentsValue', fillId: 'chartCommentsFill', value: values.testimonials }
     ];
 
     chartConfig.forEach((item) => {
       const valueEl = document.getElementById(item.valueId);
       const fillEl = document.getElementById(item.fillId);
-      if (valueEl) valueEl.textContent = item.value;
+      const percentage = dashboardLimit > 0
+        ? Math.min(100, (item.value / dashboardLimit) * 100)
+        : 0;
+      const formattedPercent = percentage.toLocaleString('pt-BR', {
+        minimumFractionDigits: 1,
+        maximumFractionDigits: 1
+      });
+      if (valueEl) valueEl.textContent = `${item.value} / ${dashboardLimit} (${formattedPercent}%)`;
       if (fillEl) {
-        const width = Math.max(8, Math.round((item.value / maxValue) * 100));
-        fillEl.style.width = `${width}%`;
+        fillEl.style.width = `${Math.max(0, Math.min(100, percentage))}%`;
       }
     });
   }
@@ -545,6 +551,14 @@
               <option value="completed" ${booking.status === 'completed' ? 'selected' : ''}>Concluido</option>
               <option value="cancelled" ${booking.status === 'cancelled' ? 'selected' : ''}>Cancelado</option>
             </select>
+            ${['completed', 'cancelled'].includes(booking.status) ? `
+              <button class="table-btn delete delete-booking" aria-label="Excluir agendamento" data-id="${booking.id}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="3 6 5 6 21 6"/>
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                </svg>
+              </button>
+            ` : ''}
           </div>
         </td>
       </tr>
@@ -553,6 +567,10 @@
     // Event listeners para mudanca de status
     tbody.querySelectorAll('.status-select').forEach(select => {
       select.addEventListener('change', () => updateBookingStatus(select.dataset.id, select.value));
+    });
+
+    tbody.querySelectorAll('.delete-booking').forEach((btn) => {
+      btn.addEventListener('click', () => confirmDeleteBooking(btn.dataset.id));
     });
 
     const pendingCount = state.bookings.filter((b) => b.status === 'pending').length;
@@ -593,6 +611,34 @@
       console.error('Erro ao atualizar status:', error);
       showToast('Erro ao atualizar status', 'error');
     }
+  }
+
+  function confirmDeleteBooking(id) {
+    state.deleteCallback = () => deleteBooking(id);
+    openModal('confirmModal');
+  }
+
+  async function deleteBooking(id) {
+    try {
+      const response = await fetch(`${CONFIG.apiUrl}/bookings/${id}`, {
+        method: 'DELETE'
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        showToast('Agendamento excluido com sucesso');
+        loadBookings(state.pagination.bookings.page, document.getElementById('bookingFilter')?.value || 'all');
+        loadStats();
+      } else {
+        showToast(data.message || 'Erro ao excluir agendamento', 'error');
+      }
+    } catch (error) {
+      console.error('Erro ao excluir agendamento:', error);
+      showToast('Erro ao excluir agendamento', 'error');
+    }
+
+    closeModal('confirmModal');
   }
 
   // Filtro de agendamentos

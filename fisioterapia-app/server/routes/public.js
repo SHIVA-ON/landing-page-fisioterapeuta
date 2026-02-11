@@ -152,7 +152,7 @@ router.get('/content', async (req, res) => {
     // Busca servicos ativos ordenados
     const services = await new Promise((resolve, reject) => {
       db.all(
-        'SELECT id, title, description, icon, order_index FROM services WHERE is_active = 1 ORDER BY order_index ASC',
+        'SELECT id, title, description, icon, order_index FROM services WHERE is_active = true ORDER BY order_index ASC',
         [],
         (err, rows) => {
           if (err) reject(err);
@@ -166,7 +166,7 @@ router.get('/content', async (req, res) => {
     if (settings.show_testimonials === 'true') {
       testimonials = await new Promise((resolve, reject) => {
         db.all(
-          'SELECT id, name, text, rating FROM testimonials WHERE is_active = 1 ORDER BY created_at DESC',
+          'SELECT id, name, text, rating FROM testimonials WHERE is_active = true ORDER BY created_at DESC',
           [],
           (err, rows) => {
             if (err) reject(err);
@@ -208,7 +208,7 @@ router.get('/services', async (req, res) => {
   try {
     const services = await new Promise((resolve, reject) => {
       db.all(
-        'SELECT id, title, description, icon FROM services WHERE is_active = 1 ORDER BY order_index ASC',
+        'SELECT id, title, description, icon FROM services WHERE is_active = true ORDER BY order_index ASC',
         [],
         (err, rows) => {
           if (err) reject(err);
@@ -265,7 +265,7 @@ router.get('/testimonials', async (req, res) => {
     
     const testimonials = await new Promise((resolve, reject) => {
       db.all(
-        'SELECT id, name, text, rating FROM testimonials WHERE is_active = 1 ORDER BY created_at DESC LIMIT 10',
+        'SELECT id, name, text, rating FROM testimonials WHERE is_active = true ORDER BY created_at DESC LIMIT 10',
         [],
         (err, rows) => {
           if (err) reject(err);
@@ -306,8 +306,8 @@ router.post('/testimonials', publicTestimonialValidation, async (req, res) => {
     const result = await new Promise((resolve, reject) => {
       db.run(
         `INSERT INTO testimonials (name, text, rating, is_active) 
-         VALUES (?, ?, ?, 1)`,
-        [name, text, parseInt(rating, 10)],
+         VALUES (?, ?, ?, ?)`,
+        [name, text, parseInt(rating, 10), true],
         function(err) {
           if (err) reject(err);
           else resolve(this.lastID);

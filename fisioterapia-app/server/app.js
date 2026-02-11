@@ -20,7 +20,6 @@ const session = require('express-session');
 const PgSession = require('connect-pg-simple')(session);
 const helmet = require('helmet');
 const cors = require('cors');
-const rateLimit = require('express-rate-limit');
 const csrf = require('csurf');
 require('dotenv').config();
 const { getPool } = require('./db/sqlite-pg-compat');
@@ -84,24 +83,6 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'CSRF-Token']
 }));
-
-// ============================================================
-// RATE LIMITING GLOBAL
-// ============================================================
-// Limita requisicoes para prevenir ataques de forca bruta
-
-const globalLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // Janela de 15 minutos
-  max: 100, // Maximo 100 requisicoes por IP
-  message: {
-    success: false,
-    message: 'Muitas requisicoes. Tente novamente mais tarde.'
-  },
-  standardHeaders: true,
-  legacyHeaders: false,
-});
-
-app.use(globalLimiter);
 
 // ============================================================
 // PARSING DE REQUISICOES

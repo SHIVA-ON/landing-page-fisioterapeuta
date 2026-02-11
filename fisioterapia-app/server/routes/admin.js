@@ -26,9 +26,7 @@ const bcrypt = require('bcrypt');
 const { 
   requireAuth, 
   requireGuest, 
-  loginLimiter, 
   logLoginAttempt,
-  checkIpBlock,
   preventCache,
   logAdminAccess
 } = require('../middleware/auth');
@@ -68,7 +66,7 @@ router.use(logAdminAccess);
 // POST /api/admin/login
 // Autentica usuario e cria sessao
 
-router.post('/login', requireGuest, loginLimiter, checkIpBlock, loginValidation, async (req, res) => {
+router.post('/login', requireGuest, loginValidation, async (req, res) => {
   const { username, password } = req.body;
   const ip = req.ip || req.connection.remoteAddress;
   
@@ -524,6 +522,68 @@ router.put('/bookings/:id/status', requireAuth, idParamValidation, async (req, r
 });
 
 // ============================================================
+// ROTA: EXCLUIR AGENDAMENTO
+// ============================================================
+// DELETE /api/admin/bookings/:id
+// Permitido apenas para status completed/cancelled
+
+router.delete('/bookings/:id', requireAuth, idParamValidation, async (req, res) => {
+  const { id } = req.params;
+  const db = getDb();
+
+  try {
+    const booking = await new Promise((resolve, reject) => {
+      db.get(
+        'SELECT id, status FROM booking_requests WHERE id = ?',
+        [id],
+        (err, row) => {
+          if (err) reject(err);
+          else resolve(row);
+        }
+      );
+    });
+
+    if (!booking) {
+      return res.status(404).json({
+        success: false,
+        message: 'Agendamento nao encontrado'
+      });
+    }
+
+    if (!['completed', 'cancelled'].includes(booking.status)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Apenas agendamentos concluidos ou cancelados podem ser excluidos'
+      });
+    }
+
+    await new Promise((resolve, reject) => {
+      db.run(
+        'DELETE FROM booking_requests WHERE id = ?',
+        [id],
+        function(err) {
+          if (err) reject(err);
+          else resolve(this.changes);
+        }
+      );
+    });
+
+    res.json({
+      success: true,
+      message: 'Agendamento excluido com sucesso'
+    });
+  } catch (error) {
+    console.error('[ERROR] Erro ao excluir agendamento:', error.message);
+    res.status(500).json({
+      success: false,
+      message: 'Erro ao excluir agendamento'
+    });
+  } finally {
+    db.close();
+  }
+});
+
+// ============================================================
 // ROTA: LISTAR DEPOIMENTOS
 // ============================================================
 // GET /api/admin/testimonials
@@ -573,7 +633,7 @@ router.post('/testimonials', requireAuth, testimonialValidation, async (req, res
     const result = await new Promise((resolve, reject) => {
       db.run(
         'INSERT INTO testimonials (name, text, rating, is_active) VALUES (?, ?, ?, ?)',
-        [name, text, rating, isActive ? 1 : 0],
+        [name, text, rating, !!isActive],
         function(err) {
           if (err) reject(err);
           else resolve(this.lastID);
@@ -617,7 +677,7 @@ router.put('/testimonials/:id', requireAuth, idParamValidation, testimonialValid
         `UPDATE testimonials 
          SET name = ?, text = ?, rating = ?, is_active = ?, updated_at = CURRENT_TIMESTAMP 
          WHERE id = ?`,
-        [name, text, rating, isActive ? 1 : 0, id],
+        [name, text, rating, !!isActive, id],
         function(err) {
           if (err) reject(err);
           else resolve(this.changes);
@@ -733,7 +793,7 @@ router.post('/services', requireAuth, serviceValidation, async (req, res) => {
     const result = await new Promise((resolve, reject) => {
       db.run(
         'INSERT INTO services (title, description, icon, order_index, is_active) VALUES (?, ?, ?, ?, ?)',
-        [title, description, icon || null, orderIndex, isActive ? 1 : 0],
+        [title, description, icon || null, orderIndex, !!isActive],
         function(err) {
           if (err) reject(err);
           else resolve(this.lastID);
@@ -777,7 +837,7 @@ router.put('/services/:id', requireAuth, idParamValidation, serviceValidation, a
         `UPDATE services 
          SET title = ?, description = ?, icon = ?, order_index = ?, is_active = ?, updated_at = CURRENT_TIMESTAMP 
          WHERE id = ?`,
-        [title, description, icon || null, orderIndex, isActive ? 1 : 0, id],
+        [title, description, icon || null, orderIndex, !!isActive, id],
         function(err) {
           if (err) reject(err);
           else resolve(this.changes);
@@ -852,6 +912,18 @@ router.get('/stats', requireAuth, async (req, res) => {
   const db = getDb();
   
   try {
+    // Contagem total de mensagens
+    const totalMessages = await new Promise((resolve, reject) => {
+      db.get(
+        'SELECT COUNT(*) as count FROM messages',
+        [],
+        (err, row) => {
+          if (err) reject(err);
+          else resolve(row.count);
+        }
+      );
+    });
+
     // Contagem de mensagens nao lidas
     const unreadMessages = await new Promise((resolve, reject) => {
       db.get(
@@ -915,11 +987,13 @@ router.get('/stats', requireAuth, async (req, res) => {
     res.json({
       success: true,
       data: {
+        totalMessages,
         unreadMessages,
         pendingBookings,
         totalBookings,
         activeTestimonials,
-        activeServices
+        activeServices,
+        dashboardLimit: 1000
       }
     });
     
