@@ -4,6 +4,7 @@
  */
 
 const nodemailer = require('nodemailer');
+const dns = require('node:dns');
 
 let transporter;
 
@@ -22,13 +23,29 @@ function getTransporter() {
   const port = Number(getRequiredEnv('SMTP_PORT'));
   const user = getRequiredEnv('SMTP_USER');
   const pass = getRequiredEnv('SMTP_PASS');
+  const forceIpv4 = String(process.env.SMTP_FORCE_IPV4 || 'false') === 'true';
+  const timeoutMs = Number(process.env.SMTP_TIMEOUT_MS || 5000);
+  const timeout = Number.isFinite(timeoutMs) && timeoutMs > 0 ? timeoutMs : 5000;
 
-  transporter = nodemailer.createTransport({
+  const transportOptions = {
     host,
     port,
     secure: port === 465,
-    auth: { user, pass }
-  });
+    auth: { user, pass },
+    // Timeouts curtos para nao travar requisicao em ambiente com rede instavel.
+    connectionTimeout: timeout,
+    greetingTimeout: timeout,
+    socketTimeout: timeout
+  };
+
+  if (forceIpv4) {
+    // Forca resolucao IPv4 para evitar ENETUNREACH em ambientes sem IPv6.
+    transportOptions.lookup = (hostname, options, callback) => {
+      dns.lookup(hostname, { ...options, family: 4, all: false }, callback);
+    };
+  }
+
+  transporter = nodemailer.createTransport(transportOptions);
 
   return transporter;
 }
@@ -93,4 +110,3 @@ async function sendAppointmentNotification(appointment) {
 module.exports = {
   sendAppointmentNotification
 };
-

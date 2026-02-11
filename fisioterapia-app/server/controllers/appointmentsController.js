@@ -57,18 +57,24 @@ async function createAppointment(req, res) {
     const ipAddress = req.ip || req.connection?.remoteAddress;
     const appointmentId = await createAppointmentRecord(payload, ipAddress);
 
-    let emailSent = false;
     let emailNotificationsEnabled = false;
-
     try {
       emailNotificationsEnabled = await isEmailNotificationsEnabled();
-      if (emailNotificationsEnabled) {
-        await sendAppointmentNotification(payload);
-        emailSent = true;
-      }
-    } catch (emailError) {
-      // Mantem sucesso da solicitacao mesmo com falha de notificacao.
-      console.error('[EMAIL] Falha ao processar notificacao de agendamento:', emailError.message);
+    } catch (settingsError) {
+      console.error('[SETTINGS] Falha ao ler email_notifications_enabled:', settingsError.message);
+      emailNotificationsEnabled = false;
+    }
+
+    // Nao bloqueia a resposta do usuario aguardando SMTP.
+    if (emailNotificationsEnabled) {
+      setImmediate(async () => {
+        try {
+          await sendAppointmentNotification(payload);
+        } catch (emailError) {
+          // Mantem sucesso da solicitacao mesmo com falha de notificacao.
+          console.error('[EMAIL] Falha ao processar notificacao de agendamento:', emailError.message);
+        }
+      });
     }
 
     return res.status(201).json({
@@ -77,7 +83,7 @@ async function createAppointment(req, res) {
       data: {
         id: appointmentId,
         emailNotificationsEnabled,
-        emailSent
+        emailSent: false
       }
     });
   } catch (error) {
@@ -92,4 +98,3 @@ async function createAppointment(req, res) {
 module.exports = {
   createAppointment
 };
-
